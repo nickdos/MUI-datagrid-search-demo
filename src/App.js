@@ -1,26 +1,40 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip } from '@mui/material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import './App.css';
+
 const speciesGroupChipMapping = {
   // colours: default primary secondary error info success warning
   "Animals": "primary",
   "Mammals": "success",
   "Birds": "success",
+  "Amphibians": "info",
+  "Reptiles": "error",
+  "Insects": "secondary",
   "Arthropods": "success",
+  "Crustaceans": "warning",
+  "Fishes": "info",
   "Plants": "danger",
-  "Angiosperms": "success",
+  "Angiosperms": "success", 
+  "Gymnosperms": "warning",
+  "Dicots": "secondary",
+  "Monocots": "secondary",
   "Fungi": "info"
 }
 const columns = [
   {
-    field: 'id', 
+    field: 'uuid', 
     headerName: 'Record ID', 
-    width: 120
+    minWidth: 80,
+    valueGetter: ({ value }) => value.slice(-8)
   },
   { field: "scientificName",
     headerName: "Scientific Name",
-    width: 200
+    minWidth: 200,
+    // renderCell: (params) => (
+    //   // params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value 
+    //   <em>{params.value}</em>
+    // )
   },
   { field: "vernacularName",
     headerName: "Vernacular Name",
@@ -28,18 +42,19 @@ const columns = [
   },
   { field: "speciesGroups",
     headerName: "Species Groups",
-    width: 180,
-    renderCell: (params) => (
-      <Stack direction="row" spacing={1}>
-        { params.value.map( (sg) => 
-          <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" />
-        )}
-      </Stack>
-    ),
+    width: 270,
+    valueGetter: ({ value }) => value.join(" | ")
+    // renderCell: (params) => (
+    //   <Stack direction="row" spacing={1}>
+    //     { params.value.map( (sg) => 
+    //       <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" />
+    //     )}
+    //   </Stack>
+    // )
   },
   { field: "dataResourceName",
     headerName: "DataResource",
-    width: 180
+    width: 170
   },
   { field: "stateProvince",
     headerName: "State/Territory",
@@ -54,7 +69,8 @@ const columns = [
   }
 ]
 
-const query = "state:%22Australian+Capital+Territory%22+AND+country:Australia";
+//const query = "state:%22Australian+Capital+Territory%22+AND+country:Australia";
+//const query = "shark+AND+country:Australia";
 
 function App() {
   const [pageState, setPageState] = useState({
@@ -64,25 +80,29 @@ function App() {
     page: 1,
     pageSize: 10,
     sort: "score",
-    order: "desc"
+    order: "desc",
+    query: "*:*"
   })
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('ON')
-      setPageState(old => ({ ...old, isLoading: true }))
-      const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize
-      const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${query}&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&order=${pageState.order}`)
-      const json = await response.json()
-      const records = json.occurrences.map(({ uuid: id, ...rest }) => ({
-        id,
-        ...rest
-      }));
-      setPageState(old => ({ ...old, isLoading: false, data: records, total: json.totalRecords }))
+      console.log('ON');
+      setPageState(old => ({ ...old, isLoading: true }));
+      const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize;
+      const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${pageState.query}&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&order=${pageState.order}`);
+      const json = await response.json();
+      setPageState(old => ({ ...old, isLoading: false, data: json.occurrences, total: json.totalRecords }));
     }
     fetchData()
-  }, [pageState.page, pageState.pageSize, pageState.sort, pageState.order])
+  }, [pageState.page, pageState.pageSize, pageState.sort, pageState.order, pageState.query]);
 
+  const searchKeyPress = (e) => {
+    if (e.key === "Enter") {
+      console.log('Input value', e.target.value);
+      setPageState(old => ({ ...old, query: e.target.value }));
+      e.preventDefault();
+    }
+  }
 
   return <Box>
     <AppBar>
@@ -93,12 +113,26 @@ function App() {
       </Toolbar>
     </AppBar>
     <Container style={{ marginTop: 100, marginBottom: 100 }}>
+      <Box
+        sx={{
+         // width: 500,
+          margin: '15px 0',
+          maxWidth: '800%',
+        }} >
+        <TextField 
+          fullWidth 
+          label="search" 
+          id="fullWidth"
+          onKeyPress={searchKeyPress} 
+        />
+      </Box>
       <DataGrid
         autoHeight
+        getRowId={(row) => row.uuid}
         rows={pageState.data}
         rowCount={pageState.total}
         loading={pageState.isLoading}
-        rowsPerPageOptions={[10, 25, 50, 70, 100]}
+        rowsPerPageOptions={[10, 20, 50, 70, 100]}
         pagination
         page={pageState.page - 1}
         pageSize={pageState.pageSize}
