@@ -14,7 +14,7 @@ const speciesGroupChipMapping = {
   "Arthropods": "success",
   "Crustaceans": "warning",
   "Fishes": "info",
-  "Plants": "danger",
+  "Plants": "error",
   "Angiosperms": "success", 
   "Gymnosperms": "warning",
   "Dicots": "secondary",
@@ -26,13 +26,16 @@ const columns = [
     field: 'uuid', 
     headerName: 'Record ID', 
     minWidth: 80,
+    sortable: false,
     valueGetter: ({ value }) => value.slice(-8)
   },
   { field: "scientificName",
     headerName: "Scientific Name",
     minWidth: 200,
     renderCell: (params) => (
-      params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value 
+      <span key={params.value}>
+        { params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
+      </span>
       //<em>{params.value}</em>
     )
   },
@@ -42,12 +45,13 @@ const columns = [
   },
   { field: "speciesGroups",
     headerName: "Species Groups",
-    width: 270,
+    width: 250,
+    sortable: false,
     // valueGetter: ({ value }) => value.join(" | ")
     renderCell: (params) => (
       <Stack direction="row" spacing={1}>
         { params.value.map( (sg) => 
-          <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" />
+          <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" key={sg}/>
         )}
       </Stack>
     )
@@ -86,7 +90,7 @@ function App() {
       console.log('ON');
       setPageState(old => ({ ...old, isLoading: true }));
       const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize;
-      const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${pageState.query}&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&order=${pageState.order}`);
+      const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${pageState.query}&fq=country:Australia&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&dir=${pageState.order}`);
       const json = await response.json();
       setPageState(old => ({ ...old, isLoading: false, data: json.occurrences, total: json.totalRecords }));
     }
@@ -114,7 +118,7 @@ function App() {
         sx={{
          // width: 500,
           margin: '15px 0',
-          maxWidth: '800%',
+          maxWidth: '100%',
         }} >
         <TextField 
           fullWidth 
@@ -138,6 +142,11 @@ function App() {
           setPageState(old => ({ ...old, page: newPage + 1 }))
         }}
         onPageSizeChange={(newPageSize) => setPageState(old => ({ ...old, pageSize: newPageSize }))}
+        sortingMode="server"
+        onSortModelChange={(sortModel) => {
+          console.log("onSortModelChange", sortModel);
+          setPageState(old => ({ ...old, sort: sortModel[0].field, order: sortModel[0].sort}))
+        }}
         columns={columns}
       />
     </Container>
