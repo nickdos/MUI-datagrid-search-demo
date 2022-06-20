@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/MUI-datagrid-search-demo/static/css/main.073c9b0a.css",
-    "main.js": "/MUI-datagrid-search-demo/static/js/main.fa85834e.js",
+    "main.css": "/MUI-datagrid-search-demo/static/css/main.638ff562.css",
+    "main.js": "/MUI-datagrid-search-demo/static/js/main.07b811fe.js",
     "static/js/787.cda612ba.chunk.js": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js",
     "index.html": "/MUI-datagrid-search-demo/index.html",
-    "main.073c9b0a.css.map": "/MUI-datagrid-search-demo/static/css/main.073c9b0a.css.map",
-    "main.fa85834e.js.map": "/MUI-datagrid-search-demo/static/js/main.fa85834e.js.map",
+    "main.638ff562.css.map": "/MUI-datagrid-search-demo/static/css/main.638ff562.css.map",
+    "main.07b811fe.js.map": "/MUI-datagrid-search-demo/static/js/main.07b811fe.js.map",
     "787.cda612ba.chunk.js.map": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.073c9b0a.css",
-    "static/js/main.fa85834e.js"
+    "static/css/main.638ff562.css",
+    "static/js/main.07b811fe.js"
   ]
 }
