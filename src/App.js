@@ -1,10 +1,10 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, CssBaseline } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react';
 import './App.css';
 
 const speciesGroupChipMapping = {
-  // colours: default primary secondary error info success warning
+  // available colours: default primary secondary error info success warning
   "Animals": "primary",
   "Mammals": "success",
   "Birds": "success",
@@ -21,13 +21,14 @@ const speciesGroupChipMapping = {
   "Monocots": "secondary",
   "Fungi": "info"
 }
+
 const columns = [
   {
     field: 'uuid', 
-    headerName: 'Record ID', 
-    minWidth: 80,
+    headerName: 'ID', 
+    width: 70,
     sortable: false,
-    valueGetter: ({ value }) => value.slice(-8)
+    valueGetter: ({ value }) => ".." + value.slice(-4)
   },
   { field: "scientificName",
     headerName: "Scientific Name",
@@ -36,7 +37,6 @@ const columns = [
       <span key={params.value}>
         { params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
       </span>
-      //<em>{params.value}</em>
     )
   },
   { field: "vernacularName",
@@ -45,13 +45,13 @@ const columns = [
   },
   { field: "speciesGroups",
     headerName: "Species Groups",
-    width: 250,
+    width: 240,
     sortable: false,
     // valueGetter: ({ value }) => value.join(" | ")
     renderCell: (params) => (
       <Stack direction="row" spacing={1}>
         { params.value.map( (sg) => 
-          <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" key={sg}/>
+          <Chip label={sg} color={sg in speciesGroupChipMapping ? speciesGroupChipMapping[sg] : "default" } size="small" variant="outlined" key={sg}/>
         )}
       </Stack>
     )
@@ -62,16 +62,17 @@ const columns = [
   },
   { field: "stateProvince",
     headerName: "State/Territory",
-    width: 175
+    width: 165  
   },
   {
     field: "eventDate",
     headerName: "Event Date",
     type: 'dateTime',
     valueGetter: ({ value }) => value && new Date(value).toISOString().substring(0,10),
-    width: 150
+    width: 120
   }
 ]
+
 
 function App() {
   const [pageState, setPageState] = useState({
@@ -105,7 +106,12 @@ function App() {
     }
   }
 
-  return <Box>
+  const rowClicked = (e) => {
+    console.log("row was clicked - UUID =", e.id);
+  }
+
+  return <Box sx={{ display: 'flex' }}>
+    <CssBaseline />
     <AppBar>
       <Toolbar>
         <Typography variant="h5" component="div">
@@ -113,7 +119,7 @@ function App() {
         </Typography>
       </Toolbar>
     </AppBar>
-    <Container style={{ marginTop: 100, marginBottom: 100 }}>
+    <Container style={{ marginTop: 100, marginBottom: 100 }} maxWidth="lg">
       <Box
         sx={{
          // width: 500,
@@ -148,6 +154,9 @@ function App() {
           setPageState(old => ({ ...old, sort: sortModel[0].field, order: sortModel[0].sort}))
         }}
         columns={columns}
+        onRowClick={rowClicked}
+        isRowSelectable={(params) => false}
+        isColumnSelectable={(params) => false}
       />
     </Container>
   </Box>
