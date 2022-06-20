@@ -31,10 +31,10 @@ const columns = [
   { field: "scientificName",
     headerName: "Scientific Name",
     minWidth: 200,
-    // renderCell: (params) => (
-    //   // params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value 
-    //   <em>{params.value}</em>
-    // )
+    renderCell: (params) => (
+      params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value 
+      //<em>{params.value}</em>
+    )
   },
   { field: "vernacularName",
     headerName: "Vernacular Name",
@@ -43,14 +43,14 @@ const columns = [
   { field: "speciesGroups",
     headerName: "Species Groups",
     width: 270,
-    valueGetter: ({ value }) => value.join(" | ")
-    // renderCell: (params) => (
-    //   <Stack direction="row" spacing={1}>
-    //     { params.value.map( (sg) => 
-    //       <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" />
-    //     )}
-    //   </Stack>
-    // )
+    // valueGetter: ({ value }) => value.join(" | ")
+    renderCell: (params) => (
+      <Stack direction="row" spacing={1}>
+        { params.value.map( (sg) => 
+          <Chip label={sg} color={speciesGroupChipMapping[sg]} size="small" variant="outlined" />
+        )}
+      </Stack>
+    )
   },
   { field: "dataResourceName",
     headerName: "DataResource",
@@ -68,9 +68,6 @@ const columns = [
     width: 150
   }
 ]
-
-//const query = "state:%22Australian+Capital+Territory%22+AND+country:Australia";
-//const query = "shark+AND+country:Australia";
 
 function App() {
   const [pageState, setPageState] = useState({
