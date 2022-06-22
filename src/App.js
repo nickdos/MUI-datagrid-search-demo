@@ -2,7 +2,7 @@ import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Cs
 import { DataGrid } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react';
 import './App.css';
-import SwipeableTemporaryDrawer from './components/Drawer';
+import RecordDrawer from './components/RecordDrawer';
 
 const speciesGroupChipMapping = {
   // available colours: default primary secondary error info success warning
@@ -86,12 +86,30 @@ function App() {
     order: "desc",
     query: "*:*"
   });
+  const [recordState, setRecordState] = useState({
+    isLoading: false,
+    data: [],
+    uuid: ''
+  });
   const [drawerState, setDrawerState] = useState(false);
-  const [recordState, setRecordState] = useState('');
+
+  useEffect(() => {
+    if (recordState.uuid) {
+      const fetchRecord = async () => {
+        //console.log('updateRecordData ON');
+        setRecordState(old => ({ ...old, isLoading: true }));
+        const resp = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/${recordState.uuid}`);
+        const json1 = await resp.json();
+        setRecordState(old => ({ ...old, isLoading: false, data: json1 }));
+        setDrawerState(true);
+      }
+      fetchRecord()
+    }
+  }, [recordState.uuid]);
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('ON');
+      //console.log('fetchData ON');
       setPageState(old => ({ ...old, isLoading: true }));
       const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize;
       const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${pageState.query}&fq=country:Australia&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&dir=${pageState.order}`);
@@ -110,9 +128,8 @@ function App() {
   }
 
   const rowClicked = (e) => {
-    console.log("row was clicked - UUID =", e.id);
-    setDrawerState(true);
-    setRecordState(e.id)
+    //console.log("row was clicked - UUID =", e.id);
+    setRecordState(old => ({ ...old, uuid: e.id }));
   }
 
   const toggleDrawer = () => {
@@ -129,7 +146,7 @@ function App() {
       </Toolbar>
     </AppBar>
     <Container style={{ marginTop: 100, marginBottom: 100 }} maxWidth="lg">
-      <SwipeableTemporaryDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} />
+      <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} />
       <Box
         sx={{
          // width: 500,
