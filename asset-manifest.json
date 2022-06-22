@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/MUI-datagrid-search-demo/static/css/main.638ff562.css",
-    "main.js": "/MUI-datagrid-search-demo/static/js/main.9ce33f54.js",
+    "main.js": "/MUI-datagrid-search-demo/static/js/main.87c50e0f.js",
     "static/js/787.cda612ba.chunk.js": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js",
     "index.html": "/MUI-datagrid-search-demo/index.html",
     "main.638ff562.css.map": "/MUI-datagrid-search-demo/static/css/main.638ff562.css.map",
-    "main.9ce33f54.js.map": "/MUI-datagrid-search-demo/static/js/main.9ce33f54.js.map",
+    "main.87c50e0f.js.map": "/MUI-datagrid-search-demo/static/js/main.87c50e0f.js.map",
     "787.cda612ba.chunk.js.map": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.638ff562.css",
-    "static/js/main.9ce33f54.js"
+    "static/js/main.87c50e0f.js"
   ]
 }
