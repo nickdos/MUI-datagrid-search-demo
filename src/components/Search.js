@@ -84,11 +84,13 @@ function Search() {
     order: "desc",
     query: "*:*"
   });
+  
   const [recordState, setRecordState] = useState({
     isLoading: false,
     data: [],
     uuid: ''
   });
+
   const [drawerState, setDrawerState] = useState(false);
 
   useEffect(() => {

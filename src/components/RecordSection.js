@@ -55,15 +55,15 @@ export default function RecordSection({recordData, section, fieldList}) {
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ padding: 1 }} colSpan={2}>
+        <TableCell style={{ padding: 0 }} colSpan={2}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Table aria-label="collapsible table">
               <TableBody>
               { fieldList.map((field) => (
                  getFieldValue(field, recordData) ? 
                   (<TableRow key={field} >
-                    <TableCell style={{ width: "25%", padding: 5, paddingLeft: 16, verticalAlign: 'top' }} colSpan={6}>{startCase(field)}</TableCell>
-                    <TableCell style={{ width: "75%", padding: 5, paddingLeft: 16, verticalAlign: 'top' }} colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
+                    <TableCell style={{ width: "30%", padding: 5, paddingLeft: 16, verticalAlign: 'top', opacity: 0.8 }} colSpan={6}>{startCase(field)}</TableCell>
+                    <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top' }} colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
                   </TableRow>) : null
                  ))}
               </TableBody>
