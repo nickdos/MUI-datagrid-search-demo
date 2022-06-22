@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { SwipeableDrawer, Typography, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { TravelExploreOutlined, ExpandMore, ExpandLess } from '@mui/icons-material/';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-//import RecordAccordion from './RecordAccordion';
 import RecordSection from './RecordSection';
 
 export default function RecordDrawer({ drawerState, toggleDrawer, recordState }) {

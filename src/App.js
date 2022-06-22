@@ -6,10 +6,12 @@ import theme from './components/theme';
 
 function App() {
 
-  return <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <Search />
-  </ThemeProvider>
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Search />
+    </ThemeProvider>
+  );
 }
 
 export default App;

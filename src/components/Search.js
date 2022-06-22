@@ -1,7 +1,6 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, CssBaseline } from '@mui/material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react';
-//import './App.css';
+import { useEffect, useState, useRef } from 'react';
 import RecordDrawer from './RecordDrawer';
 
 const speciesGroupChipMapping = {
@@ -122,6 +121,7 @@ function Search() {
     if (e.key === "Enter") {
       console.log('Input value', e.target.value);
       setPageState(old => ({ ...old, query: e.target.value }));
+      datagridRef.current.focus()
       e.preventDefault();
     }
   }
@@ -137,60 +137,64 @@ function Search() {
     setDrawerState(!drawerState);
   }
 
-  return <Box sx={{ display: 'flex' }}>
-    {/* <CssBaseline /> */}
-    <AppBar>
-      <Toolbar>
-        <Typography variant="h5" component="div">
-          Biocache React Demo
-        </Typography>
-      </Toolbar>
-    </AppBar>
-    <Container style={{ marginTop: 100, marginBottom: 100  }} maxWidth="lg">
-      <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} />
-      <Box
-        sx={{
-         // width: 500,
-          margin: '15px 0',
-          maxWidth: '100%',
-          backgroundColor: 'white'
-        }} >
-        <TextField 
-          fullWidth 
-          label="search" 
-          id="fullWidth"
-          onKeyPress={searchKeyPress} 
+  const datagridRef = useRef(null);
+
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h5" component="div">
+            Biocache React Demo
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Container style={{ marginTop: 65, marginBottom: 50  }} maxWidth="lg">
+        <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} />
+        <Box
+          sx={{
+          // width: 500,
+            margin: '15px 0',
+            maxWidth: '100%',
+            backgroundColor: 'white'
+          }} >
+          <TextField 
+            fullWidth 
+            label="search" 
+            id="fullWidth"
+            onKeyPress={searchKeyPress} 
+          />
+        </Box>
+        
+        <DataGrid
+          autoHeight
+          ref={datagridRef}
+          style={{ backgroundColor: 'white' }}
+          getRowId={(row) => row.uuid}
+          rows={pageState.data}
+          rowCount={pageState.total}
+          loading={pageState.isLoading}
+          rowsPerPageOptions={[10, 20, 50, 70, 100]}
+          pagination
+          page={pageState.page - 1}
+          pageSize={pageState.pageSize}
+          paginationMode="server"
+          onPageChange={(newPage) => {
+            setPageState(old => ({ ...old, page: newPage + 1 }))
+          }}
+          onPageSizeChange={(newPageSize) => setPageState(old => ({ ...old, pageSize: newPageSize }))}
+          sortingMode="server"
+          onSortModelChange={(sortModel) => {
+            console.log("onSortModelChange", sortModel);
+            setPageState(old => ({ ...old, sort: sortModel[0].field, order: sortModel[0].sort}))
+          }}
+          columns={columns}
+          onRowClick={rowClicked}
+          isRowSelectable={(params) => false}
+          isColumnSelectable={(params) => false}
         />
-      </Box>
-      
-      <DataGrid
-        autoHeight
-        style={{ backgroundColor: 'white' }}
-        getRowId={(row) => row.uuid}
-        rows={pageState.data}
-        rowCount={pageState.total}
-        loading={pageState.isLoading}
-        rowsPerPageOptions={[10, 20, 50, 70, 100]}
-        pagination
-        page={pageState.page - 1}
-        pageSize={pageState.pageSize}
-        paginationMode="server"
-        onPageChange={(newPage) => {
-          setPageState(old => ({ ...old, page: newPage + 1 }))
-        }}
-        onPageSizeChange={(newPageSize) => setPageState(old => ({ ...old, pageSize: newPageSize }))}
-        sortingMode="server"
-        onSortModelChange={(sortModel) => {
-          console.log("onSortModelChange", sortModel);
-          setPageState(old => ({ ...old, sort: sortModel[0].field, order: sortModel[0].sort}))
-        }}
-        columns={columns}
-        onRowClick={rowClicked}
-        isRowSelectable={(params) => false}
-        isColumnSelectable={(params) => false}
-      />
-    </Container>
-  </Box>
+      </Container>
+    </Box>
+  );
 }
 
 export default Search;
