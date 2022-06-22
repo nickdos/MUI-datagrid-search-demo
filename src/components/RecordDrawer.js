@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { SwipeableDrawer, Typography, Divider, Box, Grid, List, ListItem, ListItemIcon, ListItemText, ListItemButton, Collapse } from '@mui/material';
+import { SwipeableDrawer, Typography, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, TableContainer, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { TravelExploreOutlined, ExpandMore, ExpandLess } from '@mui/icons-material/';
-import RecordAccordion from './RecordAccordion';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+//import RecordAccordion from './RecordAccordion';
 import RecordSection from './RecordSection';
 
 export default function RecordDrawer({ drawerState, toggleDrawer, recordState }) {
   const [open, setOpen] = React.useState(true);
-  console.log("RecordDrawer -> recordState", recordState);
   
   const handleClick = () => {
     setOpen(!open);
@@ -16,33 +17,45 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState })
   const fieldListMap = {
     "Summary": ["scientificName","dataResourceName", "basisOfRecord"],
     "Record": ["institutionName","collectionName", "dataResourceName", "basisOfRecord", "miscProperties"],
-    "Taxon": ["scientificName", "scientificNameAuthorship" ,"taxonConceptID", "classificationObj", "kingdom","phylum","class", "order", "family", "genus", "matchType" ],
-    "Location": ["country", "countryCode", "stateProvinve", "basislocalityOfRecord", "decimalLatitude", "decimalLongitude", "geodeticDatum"],
-    "Occurrence": ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", "preparations", "recordedBy"]
+    "Taxon": ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "kingdom", "phylum", "class", "order", "family", "genus", "matchType" ],
+    "Location": ["country", "countryCode", "stateProvince", "locality", "decimalLatitude", "decimalLongitude", "geodeticDatum"],
+    "Occurrence": ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", "basisOfRecord", "preparations", "recordedBy", "reproductiveCondition", "occurrenceStatus"],
+    "Event": ["eventDate", "datePrecision"],
+    "Other": ["license", "lastModifiedTime", "provenance", "geospatiallyKosher" ]
   };
 
   return (
-    <div>
       <React.Fragment key={anchor}>
-        <SwipeableDrawer
+        <SwipeableDrawer 
           anchor={anchor}
           open={drawerState}
           onClose={toggleDrawer}
           onOpen={toggleDrawer}
         >
-          <List sx={{ width: '100%', maxWidth: 900, bgcolor: 'background.paper' }}>
+          <List sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper' }}>
             <ListItem alignItems="flex-start">
               <ListItemIcon>
-                <TravelExploreOutlined />
+                <TravelExploreOutlined fontSize="large"/>
               </ListItemIcon>
               <ListItemText
-                primary="Occurrence Record"
+                primary={
+                  <React.Fragment>
+                    <Typography
+                      sx={{ display: 'inline' }}
+                      component="span"
+                      variant="h6"
+                      color="text.primary"
+                    >
+                      Occurrence Record 
+                    </Typography>
+                  </React.Fragment>
+                }
                 secondary={
                   <React.Fragment>
                     <Typography
                       sx={{ display: 'inline' }}
                       component="span"
-                      variant="body"
+                      variant="p"
                       color="text.primary"
                     >
                       {recordState.uuid} 
@@ -52,21 +65,19 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState })
               />
             </ListItem>
             <Divider variant="" component="" />
-            { Object.keys(fieldListMap).map((section) => (
-              <React.Fragment key={section}>
-                <ListItemButton onClick={handleClick} >
-                  <ListItemIcon>{open ? <ExpandLess /> : <ExpandMore />}</ListItemIcon>
-                  <ListItemText>{section}</ListItemText>
-                </ListItemButton>
-                <Collapse in={open} timeout="auto" unmountOnExit>
-                  {/* <Typography>{fieldListMap[section].join("|")}</Typography> */}
-                  <RecordSection recordData={recordState.data} fieldList={fieldListMap[section]}/>
-                </Collapse>
-              </React.Fragment>
-            ))}
+            <Paper sx={{ width: '100%' }}>
+              <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                  <TableBody>
+                    { Object.keys(fieldListMap).map((section) => (
+                      <RecordSection key={section} recordData={recordState.data} section={section} fieldList={fieldListMap[section]}/>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
           </List>
         </SwipeableDrawer>
       </React.Fragment>
-    </div>
   );
 }
