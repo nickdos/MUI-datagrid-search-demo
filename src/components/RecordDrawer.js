@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SwipeableDrawer, Typography, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, 
-    TableContainer, Table, TableBody, IconButton, BottomNavigationAction, BottomNavigation, CssBaseline, CircularProgress } from '@mui/material';
+    TableContainer, Table, TableBody, IconButton, BottomNavigationAction, BottomNavigation, CircularProgress } from '@mui/material';
 import { TravelExploreOutlined, ChevronRight, ChevronLeft } from '@mui/icons-material/';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import theme from './theme';
@@ -11,7 +11,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
   const fieldListMap = {
     "Summary":    ["scientificName", "dataResourceName", "basisOfRecord", "eventDate"],
     "Record":     ["institutionName","collectionName", "dataResourceName", "basisOfRecord", "miscProperties"],
-    "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "kingdom", 
+    "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "taxonRank", "kingdom", 
                    "phylum", "class", "order", "family", "genus", "matchType" ],
     "Location":   ["country", "countryCode", "stateProvince", "locality", "decimalLatitude", "decimalLongitude", 
                    "geodeticDatum"],

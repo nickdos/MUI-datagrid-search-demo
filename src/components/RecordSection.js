@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Table, TableBody, TableRow, TableCell, Collapse, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import startCase from "lodash/startCase";
+import { startCase, words } from "lodash";
 
 function getFieldValue(field, data) {
   let value = findValueForKey(data.processed, field) || findValueForKey(data.raw, field) || undefined;
@@ -23,7 +23,7 @@ function getFieldValue(field, data) {
 
   const fixedWidthFields = ["taxonConceptID", "basisOfRecord", "catalogNumber", "occurrenceStatus", 
       "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum"];
-  if (field == 'scientificName') {
+  if (field === 'scientificName' && words(value).length > 1) {
     value = (<em>{value}</em>);
   } else if (fixedWidthFields.includes(field) ){
     value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.85rem', wordWrap: 'break-all' }}>{value}</Typography>)

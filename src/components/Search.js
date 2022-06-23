@@ -1,4 +1,3 @@
-import { ConnectingAirportsOutlined } from '@mui/icons-material';
 import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid'
 import { useEffect, useState, useRef } from 'react';
@@ -147,7 +146,7 @@ function Search() {
       const uuidList = pageState.data.map(it => it.uuid);
       console.log("uuidList", uuidList);
       const uuidPosition = uuidList.indexOf(uuid);
-      const newUuidPosition = (direction == 'next') ? uuidPosition + 1 : uuidPosition - 1;
+      const newUuidPosition = (direction === 'next') ? uuidPosition + 1 : uuidPosition - 1;
       if (uuidList[newUuidPosition] !== undefined) {
         setRecordState(old => ({ ...old, uuid: uuidList[newUuidPosition] }));
       } else {
