@@ -1,6 +1,7 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar } from '@mui/material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { DataGrid } from '@mui/x-data-grid'
-import { useEffect, useState, useRef } from 'react';
+import { Fragment, useEffect, useState, useRef } from 'react';
 import RecordDrawer from './RecordDrawer';
 
 const speciesGroupChipMapping = {
@@ -160,6 +161,19 @@ function Search() {
     setSnackState(false);
   };
 
+  const snackbarAction = (
+    <Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleSnackClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </Fragment>
+  );
+
   const datagridRef = useRef(null);
 
   return (
@@ -177,6 +191,8 @@ function Search() {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           open={snackState}
           onClose={handleSnackClose}
+          autoHideDuration={4000}
+          action={snackbarAction}
           message="No more records to show"
         />
         <Box
