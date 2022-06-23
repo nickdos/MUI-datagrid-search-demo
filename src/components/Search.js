@@ -7,15 +7,15 @@ const speciesGroupChipMapping = {
   // available colours: default primary secondary error info success warning
   "Animals": "primary",
   "Mammals": "success",
-  "Birds": "success",
+  "Birds": "error",
   "Amphibians": "info",
   "Reptiles": "error",
   "Insects": "secondary",
   "Arthropods": "success",
   "Crustaceans": "warning",
   "Fishes": "info",
-  "Plants": "error",
-  "Angiosperms": "success", 
+  "Plants": "success",
+  "Angiosperms": "error", 
   "Gymnosperms": "warning",
   "Dicots": "secondary",
   "Monocots": "secondary",
@@ -84,7 +84,7 @@ function Search() {
     order: "desc",
     query: "*:*"
   });
-  
+
   const [recordState, setRecordState] = useState({
     isLoading: false,
     data: [],

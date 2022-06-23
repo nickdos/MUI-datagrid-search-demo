@@ -60,8 +60,10 @@ export default function RecordSection({recordData, section, fieldList}) {
             <Table aria-label="collapsible table">
               <TableBody>
               { fieldList.map((field) => (
-                 getFieldValue(field, recordData) ? 
-                  (<TableRow key={field} >
+                 getFieldValue(field, recordData) ?  (
+                 <TableRow 
+                      key={field} 
+                      sx={{ ':last-child td': { borderBottom: 0 } }} >
                     <TableCell style={{ width: "30%", padding: 5, paddingLeft: 16, verticalAlign: 'top', opacity: 0.8 }} colSpan={6}>{startCase(field)}</TableCell>
                     <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top' }} colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
                   </TableRow>) : null
