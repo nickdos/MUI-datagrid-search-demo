@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { SwipeableDrawer, Typography, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, TableContainer, Table, TableBody } from '@mui/material';
-import { TravelExploreOutlined } from '@mui/icons-material/';
+import { SwipeableDrawer, Typography, Divider, Paper, List, ListItem, ListItemIcon, ListItemText, TableContainer, Table, TableBody, IconButton } from '@mui/material';
+import { TravelExploreOutlined, ChevronRight } from '@mui/icons-material/';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import theme from './theme';
 import RecordSection from './RecordSection';
@@ -8,7 +8,7 @@ import RecordSection from './RecordSection';
 export default function RecordDrawer({ drawerState, toggleDrawer, recordState }) {
 
   const fieldListMap = {
-    "Summary":    ["scientificName","dataResourceName", "basisOfRecord"],
+    "Summary":    ["scientificName", "dataResourceName", "basisOfRecord", "eventDate"],
     "Record":     ["institutionName","collectionName", "dataResourceName", "basisOfRecord", "miscProperties"],
     "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "kingdom", 
                    "phylum", "class", "order", "family", "genus", "matchType" ],
@@ -42,13 +42,16 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState })
           <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
             <ListItem alignItems="flex-start">
               <ListItemIcon>
+                <IconButton onClick={toggleDrawer}><ChevronRight /></IconButton>
+              </ListItemIcon>
+              <ListItemIcon>
                 <TravelExploreOutlined fontSize="large"/>
               </ListItemIcon>
               <ListItemText
                 primary={
                   <React.Fragment>
                     <Typography
-                      sx={{ display: 'inline' }}
+                      sx={{ fontSize: '1.2rem' }}
                       component="span"
                       variant="h6"
                       color="text.primary"
@@ -60,12 +63,12 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState })
                 secondary={
                   <React.Fragment>
                     <Typography
-                      sx={{ display: 'inline' }}
+                      sx={{  fontFamily: 'Roboto Mono', fontSize: '0.9rem' }}
                       component="span"
                       variant="p"
                       color="text.primary"
                     >
-                      {recordState.uuid} 
+                      {recordState.uuid}
                     </Typography>
                   </React.Fragment>
                 }
