@@ -1,4 +1,5 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField } from '@mui/material';
+import { ConnectingAirportsOutlined } from '@mui/icons-material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid'
 import { useEffect, useState, useRef } from 'react';
 import RecordDrawer from './RecordDrawer';
@@ -92,6 +93,7 @@ function Search() {
   });
 
   const [drawerState, setDrawerState] = useState(false);
+  const [snackState, setSnackState] = useState(false);
 
   useEffect(() => {
     if (recordState.uuid) {
@@ -139,6 +141,26 @@ function Search() {
     setDrawerState(!drawerState);
   }
 
+  const stepRecord = (uuid, direction) => {
+    console.log("stepRecord", uuid, direction);
+    if (uuid && direction) {
+      const uuidList = pageState.data.map(it => it.uuid);
+      console.log("uuidList", uuidList);
+      const uuidPosition = uuidList.indexOf(uuid);
+      const newUuidPosition = (direction == 'next') ? uuidPosition + 1 : uuidPosition - 1;
+      if (uuidList[newUuidPosition] !== undefined) {
+        setRecordState(old => ({ ...old, uuid: uuidList[newUuidPosition] }));
+      } else {
+        console.log("First or last record reached");
+        setSnackState(true);
+      }
+    }
+  }
+
+  const handleSnackClose = () => {
+    setSnackState(false);
+  };
+
   const datagridRef = useRef(null);
 
   return (
@@ -151,7 +173,13 @@ function Search() {
         </Toolbar>
       </AppBar>
       <Container style={{ marginTop: 65, marginBottom: 50  }} maxWidth="lg">
-        <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} />
+        <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} stepRecord={stepRecord} />
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          open={snackState}
+          onClose={handleSnackClose}
+          message="No more records to show"
+        />
         <Box
           sx={{
           // width: 500,
