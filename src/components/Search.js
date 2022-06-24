@@ -25,18 +25,18 @@ const speciesGroupChipMapping = {
 
 const columns = [
   {
-    field: 'uuid', 
+    field: 'id', 
     headerName: 'ID', 
     width: 70,
     sortable: false,
-    valueGetter: ({ value }) => ".." + value.slice(-4)
+    valueGetter: ({ value }) => ".." + value?.slice(-4)
   },
   { field: "scientificName",
     headerName: "Scientific Name",
     minWidth: 200,
     renderCell: (params) => (
       <span key={params.value}>
-        { params.value.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
+        { params.value?.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
       </span>
     )
   },
@@ -89,34 +89,37 @@ function Search() {
   const [recordState, setRecordState] = useState({
     isLoading: false,
     data: [],
-    uuid: ''
+    id: ''
   });
 
   const [drawerState, setDrawerState] = useState(false);
   const [snackState, setSnackState] = useState(false);
 
+  //const serverUrlPrefix = "https://biocache-ws.ala.org.au/ws/occurrences";
+  const serverUrlPrefix = "http://localhost:8983/solr/biocache";
+
   useEffect(() => {
-    if (recordState.uuid) {
+    if (recordState.id) {
       const fetchRecord = async () => {
         //console.log('updateRecordData ON');
         setRecordState(old => ({ ...old, isLoading: true }));
-        const resp = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/${recordState.uuid}`);
-        const json1 = await resp.json();
-        setRecordState(old => ({ ...old, isLoading: false, data: json1 }));
+        const resp = await fetch(`${serverUrlPrefix}/select?q=id:${recordState.id}`);
+        const json = await resp.json();
+        setRecordState(old => ({ ...old, isLoading: false, data: json.response?.docs[0] }));
         setDrawerState(true);
       }
       fetchRecord()
     }
-  }, [recordState.uuid ]);
+  }, [recordState.id ]);
 
   useEffect(() => {
     const fetchData = async () => {
       //console.log('fetchData ON');
       setPageState(old => ({ ...old, isLoading: true }));
       const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize;
-      const response = await fetch(`https://biocache-ws.ala.org.au/ws/occurrences/search?q=${pageState.query}&fq=country:Australia&pageSize=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}&dir=${pageState.order}`);
+      const response = await fetch(`${serverUrlPrefix}/select?q=${pageState.query}&fq=&rows=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}+${pageState.order}`);
       const json = await response.json();
-      setPageState(old => ({ ...old, isLoading: false, data: json.occurrences, total: json.totalRecords }));
+      setPageState(old => ({ ...old, isLoading: false, data: json.response.docs, total: json.response.numFound }));
     }
     fetchData()
   }, [pageState.page, pageState.pageSize, pageState.sort, pageState.order, pageState.query]);
@@ -131,25 +134,25 @@ function Search() {
   }
 
   const rowClicked = (e) => {
-    //console.log("row was clicked - UUID =", e.id);
-    setRecordState(old => ({ ...old, uuid: e.id }));
+    //console.log("row was clicked - id =", e.id);
+    setRecordState(old => ({ ...old, id: e.id }));
   }
 
   const toggleDrawer = () => {
     console.log("toggleDrawer", drawerState);
-    drawerState && setRecordState(old => ({ ...old, uuid: "" })); // so clicking on same record makeas drawer open
+    drawerState && setRecordState(old => ({ ...old, id: "" })); // so clicking on same record makeas drawer open
     setDrawerState(!drawerState);
   }
 
-  const stepRecord = (uuid, direction) => {
-    console.log("stepRecord", uuid, direction);
-    if (uuid && direction) {
-      const uuidList = pageState.data.map(it => it.uuid);
-      console.log("uuidList", uuidList);
-      const uuidPosition = uuidList.indexOf(uuid);
-      const newUuidPosition = (direction === 'next') ? uuidPosition + 1 : uuidPosition - 1;
-      if (uuidList[newUuidPosition] !== undefined) {
-        setRecordState(old => ({ ...old, uuid: uuidList[newUuidPosition] }));
+  const stepRecord = (id, direction) => {
+    console.log("stepRecord", id, direction);
+    if (id && direction) {
+      const idList = pageState.data.map(it => it.id);
+      console.log("idList", idList);
+      const idPosition = idList.indexOf(id);
+      const newidPosition = (direction === 'next') ? idPosition + 1 : idPosition - 1;
+      if (idList[newidPosition] !== undefined) {
+        setRecordState(old => ({ ...old, id: idList[newidPosition] }));
       } else {
         console.log("First or last record reached");
         setSnackState(true);
@@ -214,7 +217,7 @@ function Search() {
           autoHeight
           ref={datagridRef}
           style={{ backgroundColor: 'white' }}
-          getRowId={(row) => row.uuid}
+          //getRowId={(row) => row.id}
           rows={pageState.data}
           rowCount={pageState.total}
           loading={pageState.isLoading}

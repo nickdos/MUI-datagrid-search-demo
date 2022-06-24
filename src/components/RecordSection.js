@@ -4,8 +4,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { startCase, words, replace } from "lodash";
 
-function getFieldValue(field, data) {
-  let value = findValueForKey(data.processed, field) || findValueForKey(data.raw, field) || undefined;
+function getFieldValue(field, data, fieldList) {
+  let value = findValueForKey(data.processed, field) || findValueForKey(data.raw, field) || findValueForKey(data, field) || undefined;
 
   if (typeof value === 'object') {
     // Misc properties - output as a formatted JSX elements
@@ -31,7 +31,7 @@ function getFieldValue(field, data) {
       "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum"];
   if (field === 'scientificName' && words(value).length > 1) {
     value = (<em>{value}</em>);
-  } else if (fixedWidthFields.includes(field) ){
+  } else if (value && fixedWidthFields.includes(field) ){
     value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all' }}>{value}</Typography>)
   }
 
@@ -89,7 +89,7 @@ export default function RecordSection({recordData, section, fieldList}) {
                     <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top', wordBreak: 'break-all' }} 
                         colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
                   </TableRow>) : <React.Fragment key={field}/>
-                 ))}
+                ))}
               </TableBody>
             </Table>
           </Collapse>

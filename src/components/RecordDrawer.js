@@ -6,6 +6,18 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import theme from './theme';
 import RecordSection from './RecordSection';
 
+function getMiscFields(data, fieldListMap) {
+  const miscFields = [];
+  //const allKnownFields = fieldList.flat();
+  const allKnownFields = Object.values(fieldListMap).flat();
+  console.log("allKnownFields", allKnownFields);
+  Object.keys(data).map((field) => {
+    allKnownFields.includes(field) || miscFields.push(field);
+  });
+
+  return miscFields;
+}
+
 export default function RecordDrawer({ drawerState, toggleDrawer, recordState, stepRecord }) {
 
   const fieldListMap = {
@@ -19,7 +31,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                    "basisOfRecord", "samplingProtocol", "preparations", "recordedBy", "establishmentMeans","reproductiveCondition", "occurrenceStatus"],
     "Event":      ["eventDate", "datePrecision", "eventRemarks", "marine"],
     "Identification": ["typeStatus", "identifiedBy", "identifiedByID", "identificationQualifier", "identificationID", "dateIdentified", "identificationAttributes", "verbatimIdentification"],
-    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties" ]
+    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties","" ]
   };
 
   const anchor = "right";
@@ -76,7 +88,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                       variant="p"
                       color="text.primary"
                     >
-                      {recordState.data?.raw?.uuid}
+                      {recordState.data?.id}
                     </Typography>
                   </React.Fragment>
                 }
@@ -90,6 +102,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                     { Object.keys(fieldListMap).map((section) => (
                       <RecordSection key={section} recordData={recordState.data} section={section} fieldList={fieldListMap[section]}/>
                     ))}
+                    <RecordSection recordData={recordState.data} section="Misc" fieldList={getMiscFields(recordState.data, fieldListMap)}/>
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -100,13 +113,13 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
               <BottomNavigationAction 
                   label="Previous" 
                   icon={<ChevronLeft/>} 
-                  onClick={()=>stepRecord(recordState.uuid, 'previous')}
+                  onClick={()=>stepRecord(recordState.id, 'previous')}
                   disabled={recordState.isLoading}
               />
               <BottomNavigationAction 
                   label="Next" 
                   icon={<ChevronRight />} 
-                  onClick={()=>stepRecord(recordState.uuid, 'next')}
+                  onClick={()=>stepRecord(recordState.id, 'next')}
                   disabled={recordState.isLoading}
               />
             </BottomNavigation>
