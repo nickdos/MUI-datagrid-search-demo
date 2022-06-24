@@ -2,21 +2,25 @@ import * as React from 'react';
 import { Table, TableBody, TableRow, TableCell, Collapse, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { startCase, words } from "lodash";
+import { startCase, words, replace } from "lodash";
 
 function getFieldValue(field, data) {
   let value = findValueForKey(data.processed, field) || findValueForKey(data.raw, field) || undefined;
 
-  if (typeof value === 'object' && Object.keys(value).length === 0) {
-    // Fixes seeing `{}` values in output
-    value = "";
-  } else if (typeof value === 'object') {
-    // Misc properties - output as a JSON string
-    value = JSON.stringify(value);
+  if (typeof value === 'object') {
+    // Misc properties - output as a formatted JSX elements
+    value = replace(JSON.stringify(value, null, 1), /\{\s*|\s*\}|"/g,"");
+    value = replace(value, /,*\n\s+/g,"\n");
+    let rows = value.split(/(\n)/gi);
+    let newRows = [];
+    for (var i = 1; i < rows.length; i += 1) {
+      newRows.push(<React.Fragment key={i}><Typography component="p" sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all', marginTop: 0 }}>{rows[i]}</Typography></React.Fragment>);
+    }
+    value = <React.Fragment>{newRows}</React.Fragment>;
   } else if (typeof value === 'boolean') {
     // print out boolean values as String (otherwise `false` values will be excluded from output)
     value = value.toString();
-  } else if (typeof value === 'string' && value.length > 18 && /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)((-(\d{2}):(\d{2})|Z)?)$/.test(value)) {
+  } else if (typeof value === 'string' && value.length > 15 && /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)((-(\d{2}):(\d{2})|Z)?)$/.test(value)) {
     // ISO date - show date portion only
     value = value.substring(0,10);
   }
@@ -26,7 +30,7 @@ function getFieldValue(field, data) {
   if (field === 'scientificName' && words(value).length > 1) {
     value = (<em>{value}</em>);
   } else if (fixedWidthFields.includes(field) ){
-    value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.85rem', wordWrap: 'break-all' }}>{value}</Typography>)
+    value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all' }}>{value}</Typography>)
   }
 
   return value;
@@ -43,13 +47,13 @@ function findValueForKey(obj, key) {
   let value = "";
 
   for (let k in obj) {
-    if (k === key) {
+    if (k === key && Object.keys(obj[k]).length > 0)  {
       value = obj[k];
     } else if (!value && typeof obj[k] === 'object') {
       value = findValueForKey(obj[k], key);
     }
   }
-
+  
   return value
 }
 
@@ -78,9 +82,11 @@ export default function RecordSection({recordData, section, fieldList}) {
                  <TableRow 
                       key={field} 
                       sx={{ ':last-child td': { borderBottom: 0 } }} >
-                    <TableCell style={{ width: "30%", padding: 5, paddingLeft: 16, verticalAlign: 'top', opacity: 0.8 }} colSpan={6}>{startCase(field)}</TableCell>
-                    <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top', wordBreak: 'break-all' }} colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
-                  </TableRow>) : null
+                    <TableCell style={{ width: "30%", padding: 5, paddingLeft: 16, verticalAlign: 'top', opacity: 0.8 }} 
+                        colSpan={6}>{startCase(field)}</TableCell>
+                    <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top', wordBreak: 'break-all' }} 
+                        colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
+                  </TableRow>) : <React.Fragment/>
                  ))}
               </TableBody>
             </Table>

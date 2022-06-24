@@ -10,33 +10,36 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
 
   const fieldListMap = {
     "Summary":    ["scientificName", "dataResourceName", "basisOfRecord", "eventDate"],
-    "Record":     ["institutionName","collectionName", "dataResourceName", "basisOfRecord", "miscProperties"],
+    "Record":     ["institutionName","collectionName", "dataResourceName", "datasetName", "basisOfRecord"],
     "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "taxonRank", "kingdom", 
                    "phylum", "class", "order", "family", "genus", "matchType" ],
-    "Location":   ["country", "countryCode", "stateProvince", "locality", "decimalLatitude", "decimalLongitude", 
-                   "geodeticDatum"],
-    "Occurrence": ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", 
-                   "basisOfRecord", "preparations", "recordedBy", "reproductiveCondition", "occurrenceStatus"],
-    "Event":      ["eventDate", "datePrecision"],
-    "Other":      ["license", "lastModifiedTime", "provenance", "geospatiallyKosher" ]
+    "Location":   ["country", "countryCode", "stateProvince", "locality", "verbatimLocality", "decimalLatitude", "decimalLongitude", 
+                   "geodeticDatum", "terrestrial"],
+    "Occurrence": ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", "datasetID",
+                   "basisOfRecord", "samplingProtocol", "preparations", "recordedBy", "establishmentMeans","reproductiveCondition", "occurrenceStatus"],
+    "Event":      ["eventDate", "datePrecision", "eventRemarks", "marine"],
+    "Identification": ["typeStatus", "identifiedBy", "identifiedByID", "identificationQualifier", "identificationID", "dateIdentified", "identificationAttributes", "verbatimIdentification"],
+    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties" ]
   };
+
   const anchor = "right";
   const largeScreen = useMediaQuery(theme.breakpoints.up("sm"));
-  const drawerWidth = 600;
+  const drawerWidth = (largeScreen) ? 600 : "95%";
+  console.log("drawerWidth", drawerWidth, largeScreen);
 
   return (
       <React.Fragment key={anchor}>
-        {/* <CssBaseline /> */}
         <SwipeableDrawer 
-          PaperProps={largeScreen ? {
-            sx: {
-                width: drawerWidth,
-            }
-          } : {
-              sx: {
-                  width: "95%",
-              }
-          }}
+          PaperProps={{sx:{ width: drawerWidth }}}
+          // PaperProps={largeScreen ? {
+          //   sx: {
+          //       width: drawerWidth,
+          //   }
+          // } : {
+          //     sx: {
+          //         width: "95%",
+          //     }
+          // }}
           anchor={anchor}
           open={drawerState}
           onClose={toggleDrawer}
@@ -82,7 +85,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                       variant="p"
                       color="text.primary"
                     >
-                      {recordState.uuid}
+                      {recordState.data?.raw?.uuid}
                     </Typography>
                   </React.Fragment>
                 }

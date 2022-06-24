@@ -51,7 +51,7 @@ const columns = [
     // valueGetter: ({ value }) => value.join(" | ")
     renderCell: (params) => (
       <Stack direction="row" spacing={1}>
-        { params.value.map( (sg) => 
+        { params.value?.map( (sg) => 
           <Chip label={sg} color={sg in speciesGroupChipMapping ? speciesGroupChipMapping[sg] : "default" } size="small" variant="outlined" key={sg}/>
         )}
       </Stack>
@@ -230,7 +230,7 @@ function Search() {
           sortingMode="server"
           onSortModelChange={(sortModel) => {
             console.log("onSortModelChange", sortModel);
-            setPageState(old => ({ ...old, sort: sortModel[0].field, order: sortModel[0].sort}))
+            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc'}))
           }}
           columns={columns}
           onRowClick={rowClicked}
