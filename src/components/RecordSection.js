@@ -31,7 +31,7 @@ function getFieldValue(field, data) {
       "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum"];
   if (field === 'scientificName' && words(value).length > 1) {
     value = (<em>{value}</em>);
-  } else if (fixedWidthFields.includes(field) ){
+  } else if (value && fixedWidthFields.includes(field) ){
     value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all' }}>{value}</Typography>)
   }
 

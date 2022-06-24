@@ -230,7 +230,7 @@ function Search() {
           sortingMode="server"
           onSortModelChange={(sortModel) => {
             console.log("onSortModelChange", sortModel);
-            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc'}))
+            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc', page: 1}))
           }}
           columns={columns}
           onRowClick={rowClicked}
