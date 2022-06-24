@@ -80,7 +80,7 @@ function Search() {
     data: [],
     total: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     sort: "score",
     order: "desc",
     query: "*:*"
@@ -212,6 +212,7 @@ function Search() {
         
         <DataGrid
           autoHeight
+          rowHeight={40}
           ref={datagridRef}
           style={{ backgroundColor: 'white' }}
           getRowId={(row) => row.uuid}
