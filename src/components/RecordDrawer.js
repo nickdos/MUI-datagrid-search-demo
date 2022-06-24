@@ -8,20 +8,15 @@ import RecordSection from './RecordSection';
 
 function getMiscFields(data, fieldListMap) {
   const miscFields = [];
-  //const allKnownFields = fieldList.flat();
   const allKnownFields = Object.values(fieldListMap).flat();
-  console.log("allKnownFields", allKnownFields);
-  Object.keys(data).map((field) => {
-    allKnownFields.includes(field) || miscFields.push(field);
-  });
-
+  Object.keys(data).forEach( field => !allKnownFields.includes(field) && miscFields.push(field) )
   return miscFields;
 }
 
 export default function RecordDrawer({ drawerState, toggleDrawer, recordState, stepRecord }) {
 
   const fieldListMap = {
-    "Summary":    ["scientificName", "dataResourceName", "basisOfRecord", "eventDate"],
+    "Summary":    ["scientificName", "dataResourceName", "dynamicProperties_ncbi_assembly_accession", "basisOfRecord", "eventDate"],
     "Record":     ["institutionName","collectionName", "dataResourceName", "datasetName", "basisOfRecord"],
     "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "taxonRank", "kingdom", 
                    "phylum", "class", "order", "family", "genus", "matchType" ],

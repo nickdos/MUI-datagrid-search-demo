@@ -38,6 +38,13 @@ function getFieldValue(field, data, fieldList) {
   return value;
 }
 
+function mungeFieldName(field) {
+  field = replace(field, "dynamicProperties_", "");
+  field = replace(field, "ncbi_", "NCBI_");
+
+  return field;
+}
+
 /**
  * Do a deep search for a key in a nested object (JSON doc)
  * 
@@ -85,7 +92,7 @@ export default function RecordSection({recordData, section, fieldList}) {
                       key={field} 
                       sx={{ ':last-child td': { borderBottom: 0 } }} >
                     <TableCell style={{ width: "30%", padding: 5, paddingLeft: 16, verticalAlign: 'top', opacity: 0.8 }} 
-                        colSpan={6}>{startCase(field)}</TableCell>
+                        colSpan={6}>{startCase(mungeFieldName(field))}</TableCell>
                     <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top', wordBreak: 'break-all' }} 
                         colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
                   </TableRow>) : <React.Fragment key={field}/>

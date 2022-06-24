@@ -25,15 +25,15 @@ const speciesGroupChipMapping = {
 
 const columns = [
   {
-    field: 'id', 
-    headerName: 'ID', 
-    width: 70,
+    field: 'dynamicProperties_ncbi_assembly_accession', 
+    headerName: 'NCBI Accession', 
+    width: 150,
     sortable: false,
-    valueGetter: ({ value }) => ".." + value?.slice(-4)
+    //valueGetter: ({ value }) => ".." + value?.slice(-4)
   },
   { field: "scientificName",
     headerName: "Scientific Name",
-    minWidth: 200,
+    minWidth: 220,
     renderCell: (params) => (
       <span key={params.value}>
         { params.value?.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
@@ -42,11 +42,11 @@ const columns = [
   },
   { field: "vernacularName",
     headerName: "Vernacular Name",
-    width: 180
+    width: 160
   },
-  { field: "speciesGroups",
+  { field: "speciesGroup",
     headerName: "Species Groups",
-    width: 240,
+    width: 200,
     sortable: false,
     // valueGetter: ({ value }) => value.join(" | ")
     renderCell: (params) => (
@@ -57,13 +57,13 @@ const columns = [
       </Stack>
     )
   },
-  { field: "dataResourceName",
-    headerName: "DataResource",
+  { field: "dynamicProperties_ncbi_refseq_category",
+    headerName: "RefSeq Category",
     width: 170
   },
-  { field: "stateProvince",
-    headerName: "State/Territory",
-    width: 165  
+  { field: "dynamicProperties_ncbi_genome_rep",
+    headerName: "Genome Representation",
+    width: 120  
   },
   {
     field: "eventDate",
@@ -127,7 +127,7 @@ function Search() {
   const searchKeyPress = (e) => {
     if (e.key === "Enter") {
       console.log('Input value', e.target.value);
-      setPageState(old => ({ ...old, query: e.target.value }));
+      setPageState(old => ({ ...old, query: e.target.value, page: 1 }));
       datagridRef.current.focus()
       e.preventDefault();
     }
@@ -184,7 +184,7 @@ function Search() {
       <AppBar>
         <Toolbar>
           <Typography variant="h5" component="div">
-            Biocache React Demo
+            ARGA React Demo
           </Typography>
         </Toolbar>
       </AppBar>
@@ -215,6 +215,7 @@ function Search() {
         
         <DataGrid
           autoHeight
+          rowHeight={40}
           ref={datagridRef}
           style={{ backgroundColor: 'white' }}
           //getRowId={(row) => row.id}
@@ -233,7 +234,7 @@ function Search() {
           sortingMode="server"
           onSortModelChange={(sortModel) => {
             console.log("onSortModelChange", sortModel);
-            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc'}))
+            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc', page: 1}))
           }}
           columns={columns}
           onRowClick={rowClicked}
