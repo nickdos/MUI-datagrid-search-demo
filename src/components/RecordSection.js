@@ -16,13 +16,15 @@ function getFieldValue(field, data) {
     for (var i = 1; i < rows.length; i += 1) {
       newRows.push(<React.Fragment key={i}><Typography component="p" sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all', marginTop: 0 }}>{rows[i]}</Typography></React.Fragment>);
     }
-    value = <React.Fragment>{newRows}</React.Fragment>;
+    value = <React.Fragment key={field}>{newRows}</React.Fragment>;
   } else if (typeof value === 'boolean') {
     // print out boolean values as String (otherwise `false` values will be excluded from output)
     value = value.toString();
   } else if (typeof value === 'string' && value.length > 15 && /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)((-(\d{2}):(\d{2})|Z)?)$/.test(value)) {
     // ISO date - show date portion only
     value = value.substring(0,10);
+  } else if (false && typeof value === 'object') {
+    value = replace(JSON.stringify(value, null, 1));
   }
 
   const fixedWidthFields = ["taxonConceptID", "basisOfRecord", "catalogNumber", "occurrenceStatus", 
@@ -86,7 +88,7 @@ export default function RecordSection({recordData, section, fieldList}) {
                         colSpan={6}>{startCase(field)}</TableCell>
                     <TableCell style={{ width: "70%", padding: 5, paddingLeft: 16, verticalAlign: 'top', wordBreak: 'break-all' }} 
                         colSpan={6}>{getFieldValue(field, recordData)}</TableCell>
-                  </TableRow>) : <React.Fragment/>
+                  </TableRow>) : <React.Fragment key={field}/>
                  ))}
               </TableBody>
             </Table>

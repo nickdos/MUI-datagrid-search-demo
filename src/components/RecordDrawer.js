@@ -31,15 +31,6 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
       <React.Fragment key={anchor}>
         <SwipeableDrawer 
           PaperProps={{sx:{ width: drawerWidth }}}
-          // PaperProps={largeScreen ? {
-          //   sx: {
-          //       width: drawerWidth,
-          //   }
-          // } : {
-          //     sx: {
-          //         width: "95%",
-          //     }
-          // }}
           anchor={anchor}
           open={drawerState}
           onClose={toggleDrawer}
