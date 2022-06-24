@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { startCase, words, replace } from "lodash";
 
-function getFieldValue(field, data, fieldList) {
+function getFieldValue(field, data) {
   let value = findValueForKey(data.processed, field) || findValueForKey(data.raw, field) || findValueForKey(data, field) || undefined;
 
   if (typeof value === 'object') {

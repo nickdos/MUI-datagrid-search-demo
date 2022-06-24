@@ -26,7 +26,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                    "basisOfRecord", "samplingProtocol", "preparations", "recordedBy", "establishmentMeans","reproductiveCondition", "occurrenceStatus"],
     "Event":      ["eventDate", "datePrecision", "eventRemarks", "marine"],
     "Identification": ["typeStatus", "identifiedBy", "identifiedByID", "identificationQualifier", "identificationID", "dateIdentified", "identificationAttributes", "verbatimIdentification"],
-    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties","" ]
+    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties" ]
   };
 
   const anchor = "right";
