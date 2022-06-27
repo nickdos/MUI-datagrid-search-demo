@@ -1,7 +1,10 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar, IconButton } from '@mui/material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar, IconButton, SvgIcon } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { DataGrid } from '@mui/x-data-grid'
 import { Fragment, useEffect, useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
+// import ArgaLogo from './ArgaLogo';
+import logo from "../ARGA-logo-notext.png";
 import RecordDrawer from './RecordDrawer';
 
 const speciesGroupChipMapping = {
@@ -23,56 +26,74 @@ const speciesGroupChipMapping = {
   "Fungi": "info"
 }
 
-const columns = [
-  {
-    field: 'dynamicProperties_ncbi_assembly_accession', 
-    headerName: 'NCBI Accession', 
-    width: 150,
-    sortable: false,
-    //valueGetter: ({ value }) => ".." + value?.slice(-4)
-  },
-  { field: "scientificName",
-    headerName: "Scientific Name",
-    minWidth: 220,
-    renderCell: (params) => (
-      <span key={params.value}>
-        { params.value?.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
-      </span>
-    )
-  },
-  { field: "vernacularName",
-    headerName: "Vernacular Name",
-    width: 160
-  },
-  { field: "speciesGroup",
-    headerName: "Species Groups",
-    width: 200,
-    sortable: false,
-    // valueGetter: ({ value }) => value.join(" | ")
-    renderCell: (params) => (
-      <Stack direction="row" spacing={1}>
-        { params.value?.map( (sg) => 
-          <Chip label={sg} color={sg in speciesGroupChipMapping ? speciesGroupChipMapping[sg] : "default" } size="small" variant="outlined" key={sg}/>
-        )}
-      </Stack>
-    )
-  },
-  { field: "dynamicProperties_ncbi_refseq_category",
-    headerName: "RefSeq Category",
-    width: 170
-  },
-  { field: "dynamicProperties_ncbi_genome_rep",
-    headerName: "Genome Representation",
-    width: 120  
-  },
-  {
-    field: "eventDate",
-    headerName: "Event Date",
-    type: 'dateTime',
-    valueGetter: ({ value }) => value && new Date(value).toISOString().substring(0,10),
-    width: 120
-  }
-]
+const columnsDefinitions = (fqUpdate) => {
+  const columns = [
+    {
+      field: 'id',
+      headerName: "ID",
+      width: 100,
+      sortable: false
+    },
+    {
+      field: 'dynamicProperties_ncbi_assembly_accession', 
+      headerName: 'NCBI Accession', 
+      width: 145,
+      sortable: false,
+      //valueGetter: ({ value }) => ".." + value?.slice(-4)
+    },
+    { field: "raw_scientificName",
+      headerName: "Scientific Name",
+      minWidth: 220,
+      renderCell: (params) => (
+        <span key={params.value}>
+          { params.value?.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
+        </span>
+      )
+    },
+    { field: "vernacularName",
+      headerName: "Vernacular Name",
+      width: 160
+    },
+    { field: "speciesGroup",
+      headerName: "Species Groups",
+      width: 250,
+      sortable: false,
+      // valueGetter: ({ value }) => value.join(" | ")
+      renderCell: (params) => (
+        <Stack direction="row" spacing={1}>
+          { params.value?.map( (grp) => 
+            <Chip 
+              key={grp}
+              label={grp} 
+              color={grp in speciesGroupChipMapping ? speciesGroupChipMapping[grp] : "default" } 
+              data-fieldname="speciesGroup"
+              onClick={fqUpdate}
+              size="small" 
+              variant="outlined"
+            />
+          )}
+        </Stack>
+      )
+    },
+    { field: "dynamicProperties_ncbi_refseq_category",
+      headerName: "RefSeq Category",
+      width: 120
+    },
+    { field: "dynamicProperties_ncbi_genome_rep",
+      headerName: "Genome Representation",
+      width: 100  
+    },
+    {
+      field: "eventDate",
+      headerName: "Event Date",
+      type: 'dateTime',
+      valueGetter: ({ value }) => value && new Date(value).toISOString().substring(0,10),
+      width: 120
+    }
+  ]
+
+  return columns
+}
 
 function Search() {
   const [pageState, setPageState] = useState({
@@ -80,10 +101,11 @@ function Search() {
     data: [],
     total: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     sort: "score",
     order: "desc",
-    query: "*:*"
+    q: "",
+    fq: ""
   });
 
   const [recordState, setRecordState] = useState({
@@ -95,8 +117,22 @@ function Search() {
   const [drawerState, setDrawerState] = useState(false);
   const [snackState, setSnackState] = useState(false);
 
-  //const serverUrlPrefix = "https://biocache-ws.ala.org.au/ws/occurrences";
-  const serverUrlPrefix = "http://localhost:8983/solr/biocache";
+ // const { search } = useLocation();
+  const [searchParams] = useSearchParams();
+
+  const serverUrlPrefix = "http://localhost:8080/solr/biocache";
+
+  const fqUpdate = (e) => {
+    //console.log("fqUpdate", e.currentTarget, e.currentTarget.getAttribute('data-fieldname'))
+    const fq = `${e.currentTarget.getAttribute('data-fieldname')}:${e.target.textContent}`;
+    setPageState(old => ({ ...old, fq: fq, page: 1 }));
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  const columns = columnsDefinitions(fqUpdate)
+  const columnDataFields = columns.map((el) => el.field)
+  console.log("columnDataFields", columnDataFields);
 
   useEffect(() => {
     if (recordState.id) {
@@ -110,45 +146,52 @@ function Search() {
       }
       fetchRecord()
     }
-  }, [recordState.id ]);
+  }, [ recordState.id ]);
 
   useEffect(() => {
     const fetchData = async () => {
       //console.log('fetchData ON');
       setPageState(old => ({ ...old, isLoading: true }));
       const startIndex = (pageState.page * pageState.pageSize) - pageState.pageSize;
-      const response = await fetch(`${serverUrlPrefix}/select?q=${pageState.query}&fq=&rows=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}+${pageState.order}`);
+      const response = await fetch(`${serverUrlPrefix}/select?q=${pageState.q || '*:*'}&fq=${pageState.fq}&fl=${columnDataFields.join(',')}&rows=${pageState.pageSize}&start=${startIndex}&sort=${pageState.sort}+${pageState.order}`);
       const json = await response.json();
       setPageState(old => ({ ...old, isLoading: false, data: json.response.docs, total: json.response.numFound }));
     }
     fetchData()
-  }, [pageState.page, pageState.pageSize, pageState.sort, pageState.order, pageState.query]);
+  }, [ pageState.page, pageState.pageSize, pageState.sort, pageState.order, pageState.q, pageState.fq ]);
+
+  useEffect(() => {
+    if (searchParams.get('q')) {
+
+      setPageState(old => ({ ...old, q: searchParams.get('q') }));
+    }
+  }, [searchParams]);
 
   const searchKeyPress = (e) => {
     if (e.key === "Enter") {
-      console.log('Input value', e.target.value);
-      setPageState(old => ({ ...old, query: e.target.value, page: 1 }));
+      //console.log('Input value', e.target.value);
+      setPageState(old => ({ ...old, q: e.target.value, fq:'', page: 1 }));
       datagridRef.current.focus()
       e.preventDefault();
     }
   }
 
   const rowClicked = (e) => {
-    //console.log("row was clicked - id =", e.id);
+    //console.log("row was clicked - id =",e.id, e.target, e.currentTarget);
     setRecordState(old => ({ ...old, id: e.id }));
   }
 
   const toggleDrawer = () => {
-    console.log("toggleDrawer", drawerState);
+    //console.log("toggleDrawer", drawerState);
     drawerState && setRecordState(old => ({ ...old, id: "" })); // so clicking on same record makeas drawer open
     setDrawerState(!drawerState);
   }
 
   const stepRecord = (id, direction) => {
-    console.log("stepRecord", id, direction);
+    //console.log("stepRecord", id, direction);
     if (id && direction) {
       const idList = pageState.data.map(it => it.id);
-      console.log("idList", idList);
+      //console.log("idList", idList);
       const idPosition = idList.indexOf(id);
       const newidPosition = (direction === 'next') ? idPosition + 1 : idPosition - 1;
       if (idList[newidPosition] !== undefined) {
@@ -182,13 +225,18 @@ function Search() {
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar>
-        <Toolbar>
-          <Typography variant="h5" component="div">
-            ARGA React Demo
+        <Toolbar sx={{ height: 80, fontFamily: "Arial" }}>
+          {/* <SvgIcon style={{ height: 90, width: 282 }}> //  transform: 'scale(2.5)'
+            <ArgaLogo />
+          </SvgIcon> */}
+          <img src={logo} alt="ARGA logo" style={{ height: 70, marginRight: 10  }} />
+          <Typography variant="span" sx={{ fontSize: "15px", lineHeight: '16px', marginRight: 5 }} >Australian<br/>Reference<br/>Genome<br/>Atlas</Typography>
+          <Typography variant="h5"  sx={{ fontWeight: 600 }}>
+            React Demo
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container style={{ marginTop: 65, marginBottom: 50  }} maxWidth="lg">
+      <Container style={{ marginTop: 75, marginBottom: 50  }} maxWidth="lg">
         <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} stepRecord={stepRecord} />
         <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -209,12 +257,15 @@ function Search() {
             fullWidth 
             label="search" 
             id="fullWidth"
-            onKeyPress={searchKeyPress} 
+            value={pageState.q}
+            onChange={e => setPageState(old => ({ ...old, q: e.target.value, fq:'', page: 1 })) }   //(e.target.value)}
+            //onKeyPress={searchKeyPress} 
           />
         </Box>
         
         <DataGrid
           autoHeight
+          disableSelectionOnClick
           rowHeight={40}
           ref={datagridRef}
           style={{ backgroundColor: 'white' }}
@@ -237,9 +288,11 @@ function Search() {
             setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc', page: 1}))
           }}
           columns={columns}
+          columnVisibilityModel={{ id: false }}
           onRowClick={rowClicked}
-          isRowSelectable={(params) => false}
-          isColumnSelectable={(params) => false}
+          //onSelectionModelChange={(ids) => { console.log("ids", ids, "e", e) }}
+          //isRowSelectable={(params) => false}
+          isColumnSelectable={(params) => {console.log("isColumnSelectable", params)}}
         />
       </Container>
     </Box>

@@ -11,6 +11,7 @@ function getFieldValue(field, data) {
     // Misc properties - output as a formatted JSX elements
     value = replace(JSON.stringify(value, null, 1), /\{\s*|\s*\}|"/g,"");
     value = replace(value, /,*\n\s+/g,"\n");
+    value = replace(value, /\]\s*$/g, "");
     let rows = value.split(/(\n)/gi);
     let newRows = [];
     for (var i = 1; i < rows.length; i += 1) {
@@ -29,7 +30,7 @@ function getFieldValue(field, data) {
 
   const fixedWidthFields = ["taxonConceptID", "basisOfRecord", "catalogNumber", "occurrenceStatus", 
       "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum"];
-  if (field === 'scientificName' && words(value).length > 1) {
+  if (field.endsWith('scientificName') && words(value).length > 1) {
     value = (<em>{value}</em>);
   } else if (value && fixedWidthFields.includes(field) ){
     value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all' }}>{value}</Typography>)

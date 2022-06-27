@@ -13,21 +13,23 @@ function getMiscFields(data, fieldListMap) {
   return miscFields;
 }
 
-export default function RecordDrawer({ drawerState, toggleDrawer, recordState, stepRecord }) {
+const fieldListMap = {
+  "Summary":        ["scientificName", "dataResourceName", "dynamicProperties_ncbi_assembly_accession", "basisOfRecord", "eventDate"],
+  "Record":         ["institutionName","collectionName", "dataResourceName", "datasetName", "basisOfRecord"],
+  "Taxon":          ["scientificName", "raw_scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "taxonRank", "kingdom", 
+                      "phylum", "class", "order", "family", "genus", "matchType" ],
+  "Location":       ["country", "countryCode", "stateProvince", "locality", "verbatimLocality", "decimalLatitude", "decimalLongitude", 
+                      "geodeticDatum", "terrestrial"],
+  "Occurrence":     ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", "datasetID",
+                      "basisOfRecord", "samplingProtocol", "preparations", "recordedBy", "establishmentMeans","reproductiveCondition", 
+                      "occurrenceStatus"],
+  "Event":          ["eventDate", "datePrecision", "eventRemarks", "marine"],
+  "Identification": ["typeStatus", "identifiedBy", "identifiedByID", "identificationQualifier", "identificationID", "dateIdentified", 
+                      "identificationAttributes", "verbatimIdentification"],
+  "Other":          ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties" ]
+};
 
-  const fieldListMap = {
-    "Summary":    ["scientificName", "dataResourceName", "dynamicProperties_ncbi_assembly_accession", "basisOfRecord", "eventDate"],
-    "Record":     ["institutionName","collectionName", "dataResourceName", "datasetName", "basisOfRecord"],
-    "Taxon":      ["scientificName", "scientificNameAuthorship", "vernacularName", "taxonConceptID", "taxonRank", "kingdom", 
-                   "phylum", "class", "order", "family", "genus", "matchType" ],
-    "Location":   ["country", "countryCode", "stateProvince", "locality", "verbatimLocality", "decimalLatitude", "decimalLongitude", 
-                   "geodeticDatum", "terrestrial"],
-    "Occurrence": ["occurrenceID", "institutionCode", "collectionCode", "catalogNumber", "recordNumber", "datasetID",
-                   "basisOfRecord", "samplingProtocol", "preparations", "recordedBy", "establishmentMeans","reproductiveCondition", "occurrenceStatus"],
-    "Event":      ["eventDate", "datePrecision", "eventRemarks", "marine"],
-    "Identification": ["typeStatus", "identifiedBy", "identifiedByID", "identificationQualifier", "identificationID", "dateIdentified", "identificationAttributes", "verbatimIdentification"],
-    "Other":      ["license", "bibliographicCitation",  "lastModifiedTime", "provenance", "geospatiallyKosher", "miscProperties" ]
-  };
+export default function RecordDrawer({ drawerState, toggleDrawer, recordState, stepRecord }) {
 
   const anchor = "right";
   const largeScreen = useMediaQuery(theme.breakpoints.up("sm"));
@@ -71,7 +73,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
                       variant="h6"
                       color="text.primary"
                     >
-                      Occurrence Record 
+                      Genome Sequence Record 
                     </Typography>
                   </React.Fragment>
                 }
