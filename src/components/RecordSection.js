@@ -15,7 +15,7 @@ function getFieldValue(field, data) {
     let rows = value.split(/(\n)/gi);
     let newRows = [];
     for (var i = 1; i < rows.length; i += 1) {
-      newRows.push(<React.Fragment key={i}><Typography component="p" sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all', marginTop: 0 }}>{rows[i]}</Typography></React.Fragment>);
+      newRows.push(<React.Fragment key={i}><Typography component="p" sx={{ fontFamily: 'Roboto Mono', fontSize: '14px', wordWrap: 'break-all', marginTop: 0 }}>{rows[i]}</Typography></React.Fragment>);
     }
     value = <React.Fragment key={field}>{newRows}</React.Fragment>;
   } else if (typeof value === 'boolean') {
@@ -29,11 +29,11 @@ function getFieldValue(field, data) {
   }
 
   const fixedWidthFields = ["taxonConceptID", "basisOfRecord", "catalogNumber", "occurrenceStatus", 
-      "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum"];
+      "countryCode", "decimalLatitude", "decimalLongitude", "geodeticDatum","dynamicProperties_ncbi_biosample_attributes_json","name_and_lsid","common_name_and_lsid"];
   if (field.endsWith('scientificName') && words(value).length > 1) {
     value = (<em>{value}</em>);
   } else if (value && fixedWidthFields.includes(field) ){
-    value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '0.8rem', wordWrap: 'break-all' }}>{value}</Typography>)
+    value = (<Typography sx={{ fontFamily: 'Roboto Mono', fontSize: '13px', wordWrap: 'break-all' }}>{value}</Typography>)
   }
 
   return value;

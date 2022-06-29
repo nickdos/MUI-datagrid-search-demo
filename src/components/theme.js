@@ -30,12 +30,23 @@ const theme = createTheme({
           color: "white",
         }
       }
-    }
-  },
-  overrides: {
+    },
     MuiTypography: {
       h5: {
         fontWeight: 600 // not working
+      }
+    },
+    MuiDataGrid: {
+      styleOverrides: {
+        root: {
+          footerContainer: {
+            border: '1px solid red',
+            left: 0,
+            bottom: 0, // <-- KEY
+            zIndex: 2,
+            position: 'sticky'
+          }
+        }
       }
     }
   }

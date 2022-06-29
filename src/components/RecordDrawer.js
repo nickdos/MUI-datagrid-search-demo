@@ -33,7 +33,7 @@ export default function RecordDrawer({ drawerState, toggleDrawer, recordState, s
 
   const anchor = "right";
   const largeScreen = useMediaQuery(theme.breakpoints.up("sm"));
-  const drawerWidth = (largeScreen) ? 600 : "95%";
+  const drawerWidth = (largeScreen) ? "50%" : "95%";
   console.log("drawerWidth", drawerWidth, largeScreen);
 
   return (

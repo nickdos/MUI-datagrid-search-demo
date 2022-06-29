@@ -1,6 +1,6 @@
-import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar, IconButton, SvgIcon } from '@mui/material';
+import { AppBar, Box, Container, Toolbar, Typography, Stack, Chip, TextField, Snackbar, IconButton, SvgIcon, GlobalStyles } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { DataGrid } from '@mui/x-data-grid'
+import { DataGrid, GridToolbar } from '@mui/x-data-grid'
 import { Fragment, useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 // import ArgaLogo from './ArgaLogo';
@@ -35,6 +35,12 @@ const columnsDefinitions = (fqUpdate) => {
       sortable: false
     },
     {
+      field: 'score',
+      headerName: "Score",
+      width: 100,
+      sortable: true
+    },
+    {
       field: 'dynamicProperties_ncbi_assembly_accession', 
       headerName: 'NCBI Accession', 
       width: 145,
@@ -43,7 +49,7 @@ const columnsDefinitions = (fqUpdate) => {
     },
     { field: "raw_scientificName",
       headerName: "Scientific Name",
-      minWidth: 220,
+      minWidth: 240,
       renderCell: (params) => (
         <span key={params.value}>
           { params.value?.trim().split(/\s+/).length > 1 ? <em>{params.value}</em> : params.value }
@@ -52,11 +58,11 @@ const columnsDefinitions = (fqUpdate) => {
     },
     { field: "vernacularName",
       headerName: "Vernacular Name",
-      width: 160
+      width: 180
     },
     { field: "speciesGroup",
       headerName: "Species Groups",
-      width: 250,
+      width: 260,
       sortable: false,
       // valueGetter: ({ value }) => value.join(" | ")
       renderCell: (params) => (
@@ -77,11 +83,36 @@ const columnsDefinitions = (fqUpdate) => {
     },
     { field: "dynamicProperties_ncbi_refseq_category",
       headerName: "RefSeq Category",
-      width: 120
+      width: 200,
+      valueGetter: ({ value }) => value === "na" ? '' : value,
+      renderCell: (params) => (
+        params.value && 
+            <Chip 
+              key={params.value}
+              label={params.value} 
+              color={params.value ==='reference genome' ? 'success' : 'info' } 
+              data-fieldname="dynamicProperties_ncbi_refseq_category"
+              onClick={fqUpdate}
+              size="small" 
+              variant="outlined"
+            />
+      )
     },
     { field: "dynamicProperties_ncbi_genome_rep",
       headerName: "Genome Representation",
-      width: 100  
+      width: 160,
+      renderCell: (params) => (
+        params.value && 
+            <Chip 
+              key={params.value}
+              label={params.value} 
+              color={params.value ==='Full' ? 'error' : 'warning' } 
+              data-fieldname="dynamicProperties_ncbi_genome_rep"
+              onClick={fqUpdate}
+              size="small" 
+              variant="outlined"
+            />
+      )
     },
     {
       field: "eventDate",
@@ -101,11 +132,13 @@ function Search() {
     data: [],
     total: 0,
     page: 1,
-    pageSize: 20,
+    pageSize: 25,
     sort: "score",
     order: "desc",
     q: "",
-    fq: ""
+    fq: "",
+    columnDataFields: []
+    // facet=true&facet.field=dynamicProperties_ncbi_refseq_category
   });
 
   const [recordState, setRecordState] = useState({
@@ -124,7 +157,7 @@ function Search() {
 
   const fqUpdate = (e) => {
     //console.log("fqUpdate", e.currentTarget, e.currentTarget.getAttribute('data-fieldname'))
-    const fq = `${e.currentTarget.getAttribute('data-fieldname')}:${e.target.textContent}`;
+    const fq = `${e.currentTarget.getAttribute('data-fieldname')}:%22${e.target.textContent}%22`;
     setPageState(old => ({ ...old, fq: fq, page: 1 }));
     e.stopPropagation();
     e.preventDefault();
@@ -132,7 +165,8 @@ function Search() {
 
   const columns = columnsDefinitions(fqUpdate)
   const columnDataFields = columns.map((el) => el.field)
-  console.log("columnDataFields", columnDataFields);
+  //setPageState(old => ({ ...old, columnDataFields: columnDataFields} ))
+  //console.log("columnDataFields", columnDataFields);
 
   useEffect(() => {
     if (recordState.id) {
@@ -231,12 +265,12 @@ function Search() {
           </SvgIcon> */}
           <img src={logo} alt="ARGA logo" style={{ height: 70, marginRight: 10  }} />
           <Typography variant="span" sx={{ fontSize: "15px", lineHeight: '16px', marginRight: 5 }} >Australian<br/>Reference<br/>Genome<br/>Atlas</Typography>
-          <Typography variant="h5"  sx={{ fontWeight: 600 }}>
+          <Typography variant="h5"  sx={{ fontWeight: 500, fontFamily: "Raleway" }}>
             React Demo
           </Typography>
         </Toolbar>
       </AppBar>
-      <Container style={{ marginTop: 75, marginBottom: 50  }} maxWidth="lg">
+      <Container style={{ marginTop: 78, marginBottom: 74, minWidth: "100%", height: "calc(10vh - 74px)" }} maxWidth="lg">
         <RecordDrawer drawerState={drawerState} toggleDrawer={toggleDrawer} recordState={recordState} stepRecord={stepRecord} />
         <Snackbar
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -246,12 +280,14 @@ function Search() {
           action={snackbarAction}
           message="No more records to show"
         />
+        {/* <Box flex={4} p={{ xs: 0, md: 2 }}> */}
         <Box
           sx={{
           // width: 500,
             margin: '15px 0',
             maxWidth: '100%',
-            backgroundColor: 'white'
+            backgroundColor: 'white',
+            //height: 'calc(100% - 54px)' 
           }} >
           <TextField 
             fullWidth 
@@ -261,39 +297,61 @@ function Search() {
             onChange={e => setPageState(old => ({ ...old, q: e.target.value, fq:'', page: 1 })) }   //(e.target.value)}
             //onKeyPress={searchKeyPress} 
           />
+          <div style={{ width: "100%", height: "calc(100vh - 204px)" }}>
+            <DataGrid
+              // components={{
+              //   Toolbar: GridToolbar
+              // }}
+              autoHeight={false}
+              disableSelectionOnClick
+              rowHeight={40}
+              ref={datagridRef}
+              style={{ backgroundColor: 'white' }}
+              //getRowId={(row) => row.id}
+              rows={pageState.data}
+              rowCount={pageState.total}
+              loading={pageState.isLoading}
+              rowsPerPageOptions={[10, 25, 50, 70, 100]}
+              //pagination
+              page={pageState.page - 1}
+              pageSize={pageState.pageSize}
+              paginationMode="server"
+              onPageChange={(newPage) => {
+                setPageState(old => ({ ...old, page: newPage + 1 }))
+              }}
+              onPageSizeChange={(newPageSize) => setPageState(old => ({ ...old, pageSize: newPageSize }))}
+              sortingMode="server"
+              onSortModelChange={(sortModel) => {
+                console.log("onSortModelChange", sortModel);
+                setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc', page: 1}))
+              }}
+              columns={columns}
+              columnVisibilityModel={{ id: false, score: false }}
+              onRowClick={rowClicked}
+              //onSelectionModelChange={(ids) => { console.log("ids", ids, "e", e) }}
+              //isRowSelectable={(params) => false}
+              isColumnSelectable={(params) => {console.log("isColumnSelectable", params)}}
+            />
+            </div>
+          {/* </Box> */}
+          <GlobalStyles
+            styles={{
+              '.MuiDataGrid-footerContainer': {
+                backgroundColor: '#fff', //'#D6EFFE',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                bottom: 0, // <-- KEY
+                zIndex: 3,
+                position: 'fixed',
+                width: 'calc(100% - 50px)',
+
+                // '> div': {
+                //   padding: '0 24px 0 24px',
+                // },
+              },
+            }}
+          />
         </Box>
-        
-        <DataGrid
-          autoHeight
-          disableSelectionOnClick
-          rowHeight={40}
-          ref={datagridRef}
-          style={{ backgroundColor: 'white' }}
-          //getRowId={(row) => row.id}
-          rows={pageState.data}
-          rowCount={pageState.total}
-          loading={pageState.isLoading}
-          rowsPerPageOptions={[10, 20, 50, 70, 100]}
-          pagination
-          page={pageState.page - 1}
-          pageSize={pageState.pageSize}
-          paginationMode="server"
-          onPageChange={(newPage) => {
-            setPageState(old => ({ ...old, page: newPage + 1 }))
-          }}
-          onPageSizeChange={(newPageSize) => setPageState(old => ({ ...old, pageSize: newPageSize }))}
-          sortingMode="server"
-          onSortModelChange={(sortModel) => {
-            console.log("onSortModelChange", sortModel);
-            setPageState(old => ({ ...old, sort: sortModel[0]?.field || 'score', order: sortModel[0]?.sort || 'desc', page: 1}))
-          }}
-          columns={columns}
-          columnVisibilityModel={{ id: false }}
-          onRowClick={rowClicked}
-          //onSelectionModelChange={(ids) => { console.log("ids", ids, "e", e) }}
-          //isRowSelectable={(params) => false}
-          isColumnSelectable={(params) => {console.log("isColumnSelectable", params)}}
-        />
       </Container>
     </Box>
   );
