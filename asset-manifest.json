@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/MUI-datagrid-search-demo/static/css/main.638ff562.css",
-    "main.js": "/MUI-datagrid-search-demo/static/js/main.baf1811e.js",
+    "main.js": "/MUI-datagrid-search-demo/static/js/main.2126ad91.js",
     "static/js/787.cda612ba.chunk.js": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js",
     "static/media/ARGA-logo-notext.png": "/MUI-datagrid-search-demo/static/media/ARGA-logo-notext.7b73acec692069555d65.png",
     "index.html": "/MUI-datagrid-search-demo/index.html",
     "main.638ff562.css.map": "/MUI-datagrid-search-demo/static/css/main.638ff562.css.map",
-    "main.baf1811e.js.map": "/MUI-datagrid-search-demo/static/js/main.baf1811e.js.map",
+    "main.2126ad91.js.map": "/MUI-datagrid-search-demo/static/js/main.2126ad91.js.map",
     "787.cda612ba.chunk.js.map": "/MUI-datagrid-search-demo/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.638ff562.css",
-    "static/js/main.baf1811e.js"
+    "static/js/main.2126ad91.js"
   ]
 }
